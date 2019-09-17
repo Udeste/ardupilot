@@ -392,6 +392,29 @@ void AP_MotorsMatrix::setup_motors(motor_frame_class frame_class, motor_frame_ty
                     add_motor(AP_MOTORS_MOT_4,  135, -1.0000f,  2);
                     success = true;
                     break;
+                case MOTOR_FRAME_TYPE_K:
+                    /**
+                     * Sizes:
+                     * M3________M1
+                     *     | |
+                     *    /   \
+                     *  M2     M4
+                     *
+                     * M1-M2 = 538mm
+                     * M1-M3 = 454mm
+                     * M1-M4 = 356mm
+                     * M2-M3 = 358mm
+                     * M2-M4 = 362mm
+                     * M3-M4 = 542mm
+                     *
+                     * https://www.iforce2d.net/mixercalc/
+                     */
+                    add_motor_raw(AP_MOTORS_MOT_1, -0.988,  0.774, AP_MOTORS_MATRIX_YAW_FACTOR_CCW, 1);  // 2
+                    add_motor_raw(AP_MOTORS_MOT_2,  0.786, -0.776, AP_MOTORS_MATRIX_YAW_FACTOR_CCW, 2);  // 3
+                    add_motor_raw(AP_MOTORS_MOT_3,      1,  0.776, AP_MOTORS_MATRIX_YAW_FACTOR_CW,  3);  // 4
+                    add_motor_raw(AP_MOTORS_MOT_4, -0.799, -0.774, AP_MOTORS_MATRIX_YAW_FACTOR_CW,  4);  // 1
+                    success = true;
+                    break;
                 case MOTOR_FRAME_TYPE_H:
                     // H frame set-up - same as X but motors spin in opposite directiSons
                     add_motor(AP_MOTORS_MOT_1,   45, AP_MOTORS_MATRIX_YAW_FACTOR_CW,  1);
