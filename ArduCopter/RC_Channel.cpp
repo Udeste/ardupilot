@@ -349,9 +349,15 @@ void RC_Channel_Copter::do_aux_function(const aux_func_t ch_option, const aux_sw
             break;
 
         case AUX_FUNC::MOTOR_INTERLOCK:
-            // Turn on when above LOW, because channel will also be used for speed
-            // control signal in tradheli
+#if FRAME_CONFIG == HELI_FRAME
+            // The interlock logic for ROTOR_CONTROL_MODE_SPEED_PASSTHROUGH is handled 
+            // in heli_update_rotor_speed_targets.  Otherwise turn on when above low.
+            if (copter.motors->get_rsc_mode() != ROTOR_CONTROL_MODE_SPEED_PASSTHROUGH) {
+                copter.ap.motor_interlock_switch = (ch_flag == HIGH || ch_flag == MIDDLE);
+            }
+#else
             copter.ap.motor_interlock_switch = (ch_flag == HIGH || ch_flag == MIDDLE);
+#endif
             break;
 
         case AUX_FUNC::BRAKE:
@@ -562,13 +568,13 @@ void RC_Channel_Copter::do_aux_function(const aux_func_t ch_option, const aux_sw
         case AUX_FUNC::SURFACE_TRACKING:
             switch (ch_flag) {
             case LOW:
-                copter.surface_tracking.set_state(Copter::SurfaceTracking::SurfaceTrackingState::SURFACE_TRACKING_GROUND);
+                copter.surface_tracking.set_surface(Copter::SurfaceTracking::Surface::GROUND);
                 break;
             case MIDDLE:
-                copter.surface_tracking.set_state(Copter::SurfaceTracking::SurfaceTrackingState::SURFACE_TRACKING_DISABLED);
+                copter.surface_tracking.set_surface(Copter::SurfaceTracking::Surface::NONE);
                 break;
             case HIGH:
-                copter.surface_tracking.set_state(Copter::SurfaceTracking::SurfaceTrackingState::SURFACE_TRACKING_CEILING);
+                copter.surface_tracking.set_surface(Copter::SurfaceTracking::Surface::CEILING);
                 break;
             }
             break;
